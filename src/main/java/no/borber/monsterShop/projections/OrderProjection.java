@@ -1,15 +1,20 @@
 package no.borber.monsterShop.projections;
 
 import no.borber.monsterShop.application.AggregateType;
-import no.borber.monsterShop.eventStore.Event;
+import no.borber.monsterShop.application.order.events.OrderCanceled;
+import no.borber.monsterShop.application.order.OrderLineItem;
 import no.borber.monsterShop.eventStore.EventStore;
 import no.borber.monsterShop.eventStore.Projection;
+import no.borber.monsterShop.eventStore.Event;
+import no.borber.monsterShop.application.order.events.OrderCreated;
+import no.borber.monsterShop.application.basket.events.*;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class OrderProjection extends Projection{
+    private Map<String, OrderInfo> ordersByOrderId = new HashMap<>();
+    private Map<String, List<OrderInfo>> ordersByCustomerId = new HashMap<>();
 
     public OrderProjection(EventStore eventStore) {
         super(eventStore);
@@ -22,19 +27,45 @@ public class OrderProjection extends Projection{
 
     @Override
     public void handleEvent(Event event) {
-        //TODO: Should build its state from incoming events
+        if (event instanceof OrderCreated){
+            handleOrderCreated((OrderCreated) event);
+        } else if (event instanceof OrderCanceled){
+            handleOrderCanceled((OrderCanceled) event);
+        }
     }
 
     public List<OrderInfo> getOrders(final String customerId) {
-        //TODO: Should return a customers order instead of the empty list
-        return Collections.EMPTY_LIST;
+        List<OrderInfo> customerOrders = ordersByCustomerId.get(customerId);
+        return customerOrders != null ? customerOrders : Collections.emptyList();
     }
 
     public Optional<OrderInfo> getOrder(final String customerId, final String orderId) {
-        //TODO: Should return a spesific order
-        return null;
+        return ordersByCustomerId.get(customerId).stream()
+                .filter(order -> order.getOrderId().equals(orderId))
+                .findFirst();
     }
 
+    private void handleOrderCreated(OrderCreated orderCreated) {
+        OrderInfo order = mapToOrderInfo(orderCreated);
 
+        ordersByOrderId.put(order.getOrderId(), order);
+    }
 
+    private void handleOrderCanceled(OrderCanceled orderCanceled) {
+        ordersByOrderId.get(orderCanceled.getAggregateId()).setAsCanceled();
+    }
+
+    private OrderInfo mapToOrderInfo(OrderCreated orderCreated) {
+            return new OrderInfo(
+                orderCreated.getTimePlaced(),
+                orderCreated.getAggregateId(),
+                mapToLineItemInfo(orderCreated.getLineItems())
+        );
+    }
+
+    private List<OrderLineItemInfo> mapToLineItemInfo(List<OrderLineItem> orderLineItems) {
+        return orderLineItems.stream()
+                .map(item -> new OrderLineItemInfo(item.getMonsterType(), item.getQuantity(), item.getUnitPrice()))
+                .collect(Collectors.toList());
+    }
 }

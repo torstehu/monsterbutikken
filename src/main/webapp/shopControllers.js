@@ -29,17 +29,17 @@ app.controller('ShopController', ['$scope', '$modal', 'monsterService', 'basketS
         }
     };
 
-    $scope.addMonster = function(monsterType, e){
+    $scope.addItem = function(monsterType, e){
         $scope.thanksForYourOrder = false;
         if (e) {
             e.preventDefault();
             e.stopPropagation();
         }
-        basketService.addMonster(monsterType).then(getBasket);
+        basketService.addItem(monsterType).then(getBasket);
     };
 
-   $scope.removeMonster = function(monsterType){
-       basketService.removeMonster(monsterType).then(getBasket);
+   $scope.removeItem = function(monsterType){
+       basketService.removeItem(monsterType).then(getBasket);
     };
 
     $scope.basketEmpty = true;

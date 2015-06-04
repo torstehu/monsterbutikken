@@ -13,7 +13,7 @@
                 <accordion-heading>
                     <span class="col-md-1 glyphicon" data-ng-class="{'glyphicon-chevron-down': isopen, 'glyphicon-chevron-right': !isopen}"></span>
                     <span>{{monsterType.name}}</span>
-                    <button class="btn pull-right btn-primary btn-xs" data-ng-click="addMonster(monsterType.name, $event)">{{monsterType.price | currency}}</button>
+                    <button class="btn pull-right btn-primary btn-xs" data-ng-click="addItem(monsterType.name, $event)">{{monsterType.price | currency}}</button>
                 </accordion-heading>
                     <div class="col-md-offset-1">"Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."</div>
             </accordion-group>
@@ -29,7 +29,7 @@
                         </div>
                         <div class="list-group-item" data-ng-repeat="lineItem in basket">
                             <div class="row">
-                                <button style="margin-left: 15px" class="btn btn-danger btn-xs" data-ng-click="removeMonster(lineItem.monsterType)">Remove</button><span class="list-group-item-heading"> {{lineItem.monsterType}} ({{lineItem.quantity}})</span>
+                                <button style="margin-left: 15px" class="btn btn-danger btn-xs" data-ng-click="removeItem(lineItem.monsterType)">Remove</button><span class="list-group-item-heading"> {{lineItem.monsterType}} ({{lineItem.quantity}})</span>
                                 <span style="margin-right: 15px" class="pull-right list-group-item-heading">{{(getMonsterPrice(lineItem.monsterType) * lineItem.quantity) | currency}}</span>
                             </div>
                         </div>
